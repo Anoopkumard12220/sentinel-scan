@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sentinel — AI Web Vulnerability Scanner</title>
+<meta name="description" content="Passive, authorized-use-only AI security scanner. Developer: Anoop Dubey" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<canvas id="matrixCanvas"></canvas>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card glass">
+    <div class="brand">
+      <div class="brand-mark">&#9670;</div>
+      <div>
+        <h1>Sentinel</h1>
+        <p class="brand-sub">Passive Web Vulnerability Intelligence</p>
+      </div>
+    </div>
+
+    <form id="loginForm" autocomplete="off">
+      <label for="pw" class="field-label">Access password</label>
+      <div class="input-wrap" id="pwWrap">
+        <span class="icon-lock">&#128274;</span>
+        <input type="password" id="pw" name="pw" placeholder="Enter password" required />
+        <button type="button" id="toggleEye" class="icon-eye" aria-label="Show password">&#128065;</button>
+      </div>
+      <div id="loginError" class="login-error" hidden>Incorrect password. Please try again.</div>
+      <button type="submit" id="loginBtn" class="btn-primary">
+        <span id="loginBtnText">Unlock Sentinel</span>
+        <span id="loginSpinner" class="spinner" hidden></span>
+      </button>
+    </form>
+    <p class="login-footnote">Authorized security assessments only &middot; Built by Anoop Dubey</p>
+  </div>
+</div>
+
+<!-- ===================== DASHBOARD ===================== -->
+<div id="dashboard" class="dashboard" hidden>
+
+  <header class="topbar glass">
+    <div class="brand small">
+      <span class="brand-mark">&#9670;</span>
+      <span class="brand-name">Sentinel <span class="credit">by Anoop Dubey</span></span>
+    </div>
+    <div class="topbar-actions">
+      <button id="themeToggle" class="icon-btn" title="Toggle theme">&#127769;</button>
+      <button id="historyBtn" class="icon-btn" title="Scan history">&#128337;</button>
+      <button id="logoutBtn" class="icon-btn" title="Logout">&#9099;</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- HERO / SCAN INPUT -->
+    <section class="hero glass">
+      <h2 class="hero-title">Scan a target. Get a graded, AI-explained security report.</h2>
+      <p class="hero-sub">Passive checks only &mdash; headers, DNS, SSL, robots.txt and more. No intrusive testing.</p>
+      <form id="scanForm" class="scan-form">
+        <input type="url" id="targetUrl" placeholder="https://example.com" required />
+        <button type="submit" id="scanBtn" class="btn-primary">
+          <span id="scanBtnText">Run Scan</span>
+        </button>
+      </form>
+      <p class="disclaimer">&#9888;&#65039; For authorized security assessments only. Only scan assets you own or have permission to test.</p>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="progressSection" class="progress-section glass" hidden>
+      <div class="scanline-track"><div class="scanline"></div></div>
+      <p id="progressText">Initializing scan&hellip;</p>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="resultsSection" class="results-section" hidden>
+
+      <div class="score-row">
+        <div class="gauge-card glass">
+          <div class="radar-gauge" id="radarGauge">
+            <div class="radar-sweep"></div>
+            <div class="gauge-center">
+              <div id="scoreNumber" class="score-number">0</div>
+              <div class="score-label">SECURITY SCORE</div>
+            </div>
+          </div>
+          <div id="gradeBadge" class="grade-badge">&mdash;</div>
+        </div>
+
+        <div class="summary-card glass">
+          <h3>AI Executive Summary</h3>
+          <p id="execSummary">&mdash;</p>
+          <div class="chip-row" id="severityChips"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel glass">
+          <h3>Security Header Checks</h3>
+          <div id="headerCards" class="header-cards"></div>
+        </div>
+        <div class="panel glass">
+          <h3>Website Intelligence</h3>
+          <div id="intelList" class="intel-list"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel glass">
+          <h3>OWASP Top 10 Mapping</h3>
+          <div id="owaspList" class="owasp-list"></div>
+        </div>
+        <div class="panel glass">
+          <h3>AI Priority Fix List</h3>
+          <ol id="fixList" class="fix-list"></ol>
+        </div>
+      </div>
+
+      <div class="panel glass">
+        <h3>AI Risk Timeline</h3>
+        <div id="timeline" class="timeline"></div>
+      </div>
+
+      <div class="panel glass">
+        <h3>Technical &amp; Business Impact</h3>
+        <div class="grid-2">
+          <div><h4>Technical Summary</h4><p id="techSummary">&mdash;</p></div>
+          <div><h4>Business Impact</h4><p id="bizImpact">&mdash;</p></div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="exportJson" class="btn-secondary">Export JSON</button>
+        <button id="exportPdf" class="btn-secondary">Export PDF</button>
+        <button id="copyReport" class="btn-secondary">Copy Report</button>
+        <button id="shareReport" class="btn-secondary">Share Report</button>
+        <button id="compareBtn" class="btn-secondary">Compare With Previous</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- HISTORY DRAWER -->
+  <aside id="historyDrawer" class="history-drawer glass" hidden>
+    <div class="drawer-head">
+      <h3>Scan History</h3>
+      <button id="closeHistory" class="icon-btn">&#10005;</button>
+    </div>
+    <div id="historyList" class="history-list"></div>
+  </aside>
+
+  <!-- COMPARE MODAL -->
+  <div id="compareModal" class="modal" hidden>
+    <div class="modal-card glass">
+      <div class="drawer-head">
+        <h3>Compare Scans</h3>
+        <button id="closeCompare" class="icon-btn">&#10005;</button>
+      </div>
+      <div id="compareBody" class="compare-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "sentinel-scan",
+  "version": "1.0.0",
+  "description": "Sentinel — passive AI web vulnerability scanner. Developer: Anoop Dubey",
+  "private": true,
+  "engines": {
+    "node": ">=18.x"
+  }
+}
