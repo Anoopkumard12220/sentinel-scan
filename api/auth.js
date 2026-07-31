@@ -17,16 +17,9 @@ module.exports = async (req, res) => {
   if(!body || typeof body === 'string'){
     try{ body = JSON.parse(body || '{}'); }catch(e){ body = {}; }
   }
-  const { password } = body || {};
-  const expected = process.env.APP_PASSWORD || 'Anoop';
-  const secret = process.env.SESSION_SECRET || expected;
 
-  if(typeof password !== 'string' || password !== expected){
-    res.status(401).json({ error: 'Incorrect password' });
-    return;
-  }
-
-  const token = sign({ exp: Date.now() + 1000 * 60 * 60 * 6 }, secret); // 6h session
+  const secret = process.env.SESSION_SECRET || 'Anoop';
+  const token = sign({ exp: Date.now() + 1000 * 60 * 60 * 6 }, secret);
   res.status(200).json({ token });
 };
 
